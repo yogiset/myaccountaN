@@ -5,22 +5,22 @@
 <div class="content">
 <p>
 <strong>Username:</strong>
-{{ loggedInUser.name }}
+<!-- {{ loggedInUser.name }} -->
 </p>
 <p>
 <strong>Email:</strong>
-{{ loggedInUser.email }}
+<!-- {{ loggedInUser.email }} -->
 </p>
 </div>
 </div>
 </section>
 </template>
 <script>
-import { mapGetters } from 'vuex'
+// import { mapGetters } from 'vuex'
 export default {
-middleware: 'auth',
+// middleware: 'auth',
 computed: {
-...mapGetters(['loggedInUser'])
-}
+// ...mapGetters([])
+    }
 }
 </script>
