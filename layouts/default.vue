@@ -25,7 +25,7 @@ computed: {
     },
     showLoginbar() {
       // List of pages where you want to show the Navbar
-      const pagesToLoginbar = ['/profile',];
+      const pagesToLoginbar = ['/profile','/changePassword',];
       return pagesToLoginbar.includes(this.$route.path);
     },
 },

@@ -8,7 +8,7 @@
 <Notification :message="error" v-if="error"/>
 <NotificationEmail :message="messageEmail" v-if="messageEmail"/>
 <div class="field">
-<label class="label">Nama Lengkap</label>
+<label class="label">Username</label>
 <div class="control">
 <input
 type="text"
