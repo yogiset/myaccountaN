@@ -8,15 +8,12 @@
 
 
 
-<div class="d-flex align-items-center ms-auto">
-<button class="btn btn-outline-primary py-1 px-3 me-4" @click="shuffle">
-Shuffle!
-</button>    
+<div class="d-flex align-items-center ms-auto">   
 <!-- /* Form input pencarian */ -->
-<input type="text" class="form-control" placeholder="Cari Jabatan"
+<input type="text" class="form-control search-input" placeholder="Cari"
 v-model="searchQuery">
 <!-- /* Drop down category */ -->
-<select id="akuntan" v-model="cariJabatan">
+<select id="akuntan" class="form-control category-dropdown" v-model="cariJabatan">
     <option value="pilih">Pilih Jabatan</option>
     <option value="OfficeBoy">OfficeBoy</option>
     <option value="KaryawanUmum">Karyawan Umum</option>
@@ -31,7 +28,7 @@ v-model="searchQuery">
 </select>
 
 
-<div class="d-flex align-items-center justify-content-end w-100">
+<div class="d-flex align-items-center justify-content-end w-100 view-as-button">
 <span class="me-2">View As</span>
 <button
 class="btn btn-outline-secondary py-1 px-3"
@@ -48,6 +45,7 @@ v-for="karyawan in filteredKaryawans"
 :key="karyawan.id"
 :karyawan="karyawan"
 :isGrid="isGrid"
+@delete-karyawan="handleDeleteKaryawan"
 />
 
 </transition-group>
@@ -210,10 +208,16 @@ CardKaryawan
         },
     },
         methods: {
-        
-            shuffle() {
-            this.karyawans = _.shuffle(this.karyawans)
+    handleDeleteKaryawan(deletedKaryawan) {
+    // Find the index of the deletedKaryawan in your data array
+    const index = this.karyawans.findIndex((karyawan) => karyawan.id === deletedKaryawan.id);
+
+    if (index !== -1) {
+      // Remove the deletedKaryawan from the data array
+      this.karyawans.splice(index, 1);
+    }
     },
+
           previewImage(event) {
             const input = event.target;
             if (input.files && input.files[0]) {
@@ -287,6 +291,58 @@ select option {
 transition: .4s;
 }
 
+/* Container for search, category, and "View As" bars */
+.search-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+/* Search input */
+.search-input {
+  flex-grow: 1;
+  margin-right: 1rem;
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+/* Category dropdown */
+.category-dropdown {
+  flex-basis: 70%;
+  margin-right: 1rem;
+}
+
+/* "View As" button */
+.view-as-button {
+  margin-left: auto;
+}
+
+/* Style the category dropdown options */
+.category-dropdown select {
+  background-color: #fff;
+  border: 1px solid #ccc;
+  padding: 10px;
+  width: 100%;
+}
+
+/* Style the "View As" button */
+.view-as-button button {
+  padding: 0.5rem 1rem;
+  font-weight: bold;
+}
+
+/* Style the "View As" button text */
+.view-as-button span {
+  margin-right: 0.5rem;
+  font-size: 14px;
+}
+
+/* Align the "View As" button to the right */
+.view-as-button {
+  margin-left: auto;
+}
 
 
 </style>

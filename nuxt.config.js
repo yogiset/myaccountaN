@@ -13,8 +13,13 @@ export default {
     {
       rel: 'stylesheet',
       href:'https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.1/css/bulma.min.css'
-      }
+      },
+      { rel: "icon", type: "image/x-icon", href: "/favicon.ico" },
+      { rel: "stylesheet", href: 'https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css' },  
   
+    ],
+    scripts: [
+      {src: 'https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js',body: true},
     ],
 
   },
