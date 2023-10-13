@@ -1,4 +1,5 @@
 <template>
+<section class="section min-vh-100">
 <div class="py-4">
 <div class="container">
 
@@ -10,13 +11,13 @@
 
 <div class="d-flex align-items-center ms-auto">   
 <!-- /* Form input pencarian */ -->
-<input type="text" class="form-control search-input" placeholder="Cari"
+<input type="text" class="form-control search-input" placeholder="Cari Nama"
 v-model="searchQuery">
 <!-- /* Drop down category */ -->
 <select id="akuntan" class="form-control category-dropdown" v-model="cariJabatan">
     <option value="pilih">Pilih Jabatan</option>
-    <option value="OfficeBoy">OfficeBoy</option>
-    <option value="KaryawanUmum">Karyawan Umum</option>
+    <option value="Office Boy">OfficeBoy</option>
+    <option value="Karyawan Umum">Karyawan Umum</option>
     <option value="Administrasi">Administrasi</option>
     <option value="Akuntan">Akuntan</option>
     <option value="Manager">Manager</option>
@@ -29,23 +30,15 @@ v-model="searchQuery">
 
 
 <div class="d-flex align-items-center justify-content-end w-100 view-as-button">
-<span class="me-2">View As</span>
-<button
-class="btn btn-outline-secondary py-1 px-3"
-@click="isGrid = !isGrid"
->
-{{ isGrid ? 'Grid' : 'List' }}
-</button>
+
 </div>
 </div>
 </div>
-<transition-group name="karyawan" tag="div" class="list-karyawan row">
+<transition-group name="karyawan" tag="div" class="d-flex gap-4 w-100 flex-wrap justify-content-center" >
 <CardKaryawan 
 v-for="karyawan in filteredKaryawans"
 :key="karyawan.id"
 :karyawan="karyawan"
-:isGrid="isGrid"
-@delete-karyawan="handleDeleteKaryawan"
 />
 
 </transition-group>
@@ -68,6 +61,7 @@ v-for="karyawan in filteredKaryawans"
                 </option>
             </select>    
 <input v-model="form.phone" class="form-control border-0 mb-2" placeholder="Phone Number" type="text">
+<input v-model="form.umur" class="form-control border-0 mb-2" placeholder="Umur" type="text">
 <input v-model="form.tgl_lahir" class="form-control border-0 mb-2" placeholder="Tanggal Lahir" type="date">  
 <div class="image-upload">
   <label for="image-upload-input">
@@ -95,11 +89,11 @@ v-for="karyawan in filteredKaryawans"
 
 </div>
 </div>
+</section>
 </template>
 <script>
 import CardKaryawan from "@/components/CardKaryawan.vue"
-
-
+import { mapState, mapMutations, mapActions } from "vuex"
 
 export default {
     
@@ -114,7 +108,6 @@ CardKaryawan
             // Variabel penampung teks pencarian
                 searchQuery: '',
             // Tipe layout daftar karyawans
-                isGrid: false,
             // Status saat menambahkan karyawans
                 isCreating: false,
             // Daftar karyawans
@@ -123,6 +116,7 @@ CardKaryawan
                 nama:'',
                 email:'',
                 jabatan:'',
+                umur:'',
                 phone:'',
                 tgl_lahir:'',
                 imageurl:'',
@@ -131,8 +125,8 @@ CardKaryawan
             options: {
 
             inquiry: [
-                { value: 'OfficeBoy', text: "Office Boy"},
-                { value: 'KaryawanUmum', text: "Karyawan Umum"},
+                { value: 'Office Boy', text: "Office Boy"},
+                { value: 'Karyawan Umum', text: "Karyawan Umum"},
                 { value: 'Administrasi', text: "Administrasi"},
                 { value: 'Akuntan', text: "Akuntan"},
                 { value: 'Manager', text: "Manager"},
@@ -144,48 +138,16 @@ CardKaryawan
             ]
             },
 
-            karyawans:[
-	{   
-        id:1,
-        kodekaryawan:"KK-22",
-        nama:"Andi",
-        email:"Andi@gmail.com",
-        jabatan:"Karyawan Umum",
-        umur:"25",
-        phone:"08122345678",
-        tgl_lahir:"",
-		imageurl: 'https://images.unsplash.com/photo-1649282806617-c51bb282899c?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2070&q=80'
-  },
-	{   
-        id:2,
-        kodekaryawan:"KK-33",
-        nama:"Ando",
-        email:"Ando@gmail.com",
-        jabatan:"Karyawan Umum",
-        umur:"25",
-        phone:"08122345677",
-        tgl_lahir:"",
-		imageurl: 'https://images.unsplash.com/photo-1649282806617-c51bb282899c?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2070&q=80'
-  },
-		{   
-        id:3,
-        kodekaryawan:"KK-44",
-        nama:"Andu",
-        email:"Andu@gmail.com",
-        jabatan:"Karyawan Umum",
-        umur:"24",
-        phone:"08122345679",
-        tgl_lahir:"",
-		imageurl: 'https://images.unsplash.com/photo-1649282806617-c51bb282899c?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2070&q=80'
-  },
-
-
-
-                ],
 
         }
     },
         computed: {
+                karyawans() {
+        return this.$store.state.karyawan.karyawans;
+        },
+
+        ...mapState('karyawan', ['karyawans']),
+        
         filteredKaryawans() {
         let filteredKaryawans = [...this.karyawans];
 
@@ -207,16 +169,22 @@ CardKaryawan
         return filteredKaryawans;
         },
     },
-        methods: {
-    handleDeleteKaryawan(deletedKaryawan) {
-    // Find the index of the deletedKaryawan in your data array
-    const index = this.karyawans.findIndex((karyawan) => karyawan.id === deletedKaryawan.id);
 
-    if (index !== -1) {
-      // Remove the deletedKaryawan from the data array
-      this.karyawans.splice(index, 1);
-    }
-    },
+  mounted() {
+    // this.fetchDataFromAPI();
+    this.getKaryawans();
+  },
+      methods: {
+    //     async fetchDataFromAPI() { //axios
+    //   try {
+    //     const response = await this.$axios.get("/karyawan/all"); // Replace with your API endpoint
+    //     this.karyawans = response.data; // Assuming your API response is an array of karyawans
+    //     console.log(response);
+    //   } catch (error) {
+    //     console.error("Error fetching data from API:", error);
+    //   }
+    // },      
+
 
           previewImage(event) {
             const input = event.target;
@@ -230,32 +198,51 @@ CardKaryawan
     },
 
 
-        handleSubmit() {
-            const newItem = {
-            id: this.form.id,
-            nama: this.form.nama,
-            email: this.form.email,    
-            jabatan: this.form.jabatan,
-            phone: this.form.phone,
-            tgl_lahir: this.form.tgl_lahir,
-            imageurl: this.form.imageurl,
-            };
+      // async handleSubmit() { //axios
+      // try {
+      //   const response = await this.$axios.post("/karyawan/add", this.form); // Replace with your API endpoint
+      //   const newItem = response.data;
+      //   this.karyawans.push(newItem);
+      //   // Reset the form fields after adding a karyawan
+      //   this.form = {
 
-            console.log('New Item:', newItem);
-    
-            this.karyawans.push(newItem);
+      //           id:'',
+      //           nama:'',
+      //           email:'',
+      //           jabatan:'',
+      //           umur:'',
+      //           phone:'',
+      //           tgl_lahir:'',
+      //           imageurl:'',
 
-            console.log('Updated Karyawans:', this.karyawans);
+      //   };
+      //   this.isCreating = false;
+      // } catch (error) {
+      //   console.error("Error creating new karyawan:", error);
+      // }
+      //   }
 
-            // Reset the form fields after adding a karyawans
-            this.form.id = '';
-            this.form.nama = '';
-            this.form.email = '';
-            this.form.jabatan = '';
-            this.form.phone = '';
-            this.form.tgl_lahir = '';
-            this.form.imageurl = '';
-        }
+        async handleSubmit() { // state management
+
+            this.form.id += 1
+            // Dispatch the addKaryawan action
+            await this.addKaryawan(this.form);
+
+            this.form = {
+            nama: '',
+            email: '',
+            jabatan: '',
+            umur: '',
+            phone:'',
+            tgl_lahir:'',
+            imageurl:'',
+            }
+            this.isCreating = false;
+
+        },
+
+
+      ...mapActions('karyawan', ['addKaryawan', 'getKaryawans']),
     },      
             
 
@@ -277,6 +264,12 @@ CardKaryawan
 </script>
 
 <style>
+.section{
+    background:  url('static/7.webp') no-repeat;
+    background-size: cover;
+    background-position: center;   
+}
+
 select {
   background-color: #fff;
   border: 1px solid #ccc;
@@ -314,10 +307,6 @@ transition: .4s;
   margin-right: 1rem;
 }
 
-/* "View As" button */
-.view-as-button {
-  margin-left: auto;
-}
 
 /* Style the category dropdown options */
 .category-dropdown select {
@@ -327,22 +316,6 @@ transition: .4s;
   width: 100%;
 }
 
-/* Style the "View As" button */
-.view-as-button button {
-  padding: 0.5rem 1rem;
-  font-weight: bold;
-}
-
-/* Style the "View As" button text */
-.view-as-button span {
-  margin-right: 0.5rem;
-  font-size: 14px;
-}
-
-/* Align the "View As" button to the right */
-.view-as-button {
-  margin-left: auto;
-}
 
 
 </style>

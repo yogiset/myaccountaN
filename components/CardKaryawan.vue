@@ -1,13 +1,9 @@
 <template>
   <div
     class="card custom-card"
-    :class="{
-      'col-12 col-md-6 col-lg-4': isGrid,
-      'col-12': !isGrid
-    }"
   >
     <div v-if="!isEditing">
-    <img :src="karyawan.imageurl" alt="Karyawan Image" class="card-img-top" />
+    <img  :src="karyawan.imageurl" alt="Karyawan Image" class="card-img-top" />
     <div class="card-body">
       <h5 class="card-title">Kode {{ karyawan.kodekaryawan }}</h5>
       <div class="info">
@@ -22,7 +18,7 @@
       <button @click="editKaryawan" class="btn btn-warning">
          Edit
       </button>
-      <button @click="deleteKaryawan" class="btn btn-danger">
+      <button @click="deleteKaryawan(karyawan.id)" class="btn btn-danger">
         Delete
       </button>
     </div>
@@ -54,14 +50,13 @@
     <button @click="saveEdit" class="btn btn-success">Save</button>
     <button @click="cancelEdit" class="btn btn-secondary">Cancel</button>  
 
-
     </div>
-  </div>
+    </div>
 </template>
 
 <script>
-
-
+import Swal from 'sweetalert2';
+import { mapState, mapMutations, mapActions } from "vuex"
 export default {
 props: {
 karyawan: {
@@ -69,11 +64,7 @@ type: Object,
 required: true,
 default: 'Untitled'
 },
-isGrid: {
-type: Boolean,
-required: true,
-default: false
-  },
+
 },
   data() {
     return {
@@ -104,15 +95,84 @@ default: false
     // Enable edit mode
     this.isEditing = true;
     },
-    deleteKaryawan(){
-    // You can add a confirmation dialog here to confirm the deletion if needed
-    const confirmDelete = window.confirm('Are you sure you want to delete this item?');
+
+
+// async deleteKaryawan() { //axios
+//   const result = await Swal.fire({
+//     title: 'Are you sure?',
+//     text: "You won't be able to revert this!",
+//     icon: 'warning',
+//     showCancelButton: true,
+//     confirmButtonColor: '#3085d6',
+//     cancelButtonColor: '#d33',
+//     confirmButtonText: 'Yes, delete it!'
+//   });
+
+//   if (result.isConfirmed) {
+//     try {
+//       await this.$axios.delete(`/karyawan/delete/${this.karyawan.id}`); // Replace with your API endpoint
+//       this.$emit("delete-karyawan", this.karyawan);
+//       Swal.fire(
+//         'Deleted!',
+//         'Your data has been deleted.',
+//         'success'
+//       );
+//     } catch (error) {
+//       console.error("Error deleting karyawan:", error.response);
+//       Swal.fire(
+//         'Error!',
+//         'An error occurred while deleting the file.',
+//         'error'
+//       );
+//     }
+//   }
+// },
+
+    async deleteKaryawan() { // state management
+  const result = await Swal.fire({
+    title: "Are you sure?",
+    text: "You won't be able to revert this!",
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonColor: "#3085d6",
+    cancelButtonColor: "#d33",
+    confirmButtonText: "Yes, delete it!",
+  });
+
+  if (result.isConfirmed) {
+    try {
+      // Dispatch a Vuex action to delete the item
+      await this.$store.dispatch("karyawan/deleteKaryawan", this.karyawan.id);
+
+      // The above line dispatches the "deleteKaryawan" action with the item's ID as the payload.
+      // This action should handle both the API request and state update.
+
+      Swal.fire("Deleted!", "The item has been deleted.", "success");
+    } catch (error) {
+      console.error("Error deleteKaryawan:", error);
+      Swal.fire(
+        "Error!",
+        "An error occurred while deleting the item.",
+        "error"
+      );
+    }
+  }
+},
+
+async saveEdit() {  // state management
+  try {
+    // Call the Vuex action to update the edited karyawan
+    await this.updateKaryawan(this.editedKaryawan);
     
-    if (confirmDelete) {
-      // Delete the karyawan object (e.g., by emitting an event to notify the parent component)
-      this.$emit('delete-karyawan', this.karyawan);
-      }
-    },
+    // After saving, disable edit mode
+    this.isEditing = false;
+  } catch (error) {
+    console.error("Error saving edited karyawan:", error.response);
+  }
+},
+
+...mapActions('karyawan', ['updateKaryawan', 'deleteKaryawan']),
+
     previewImage(event) {
             const input = event.target;
             if (input.files && input.files[0]) {
@@ -123,13 +183,24 @@ default: false
             reader.readAsDataURL(input.files[0]);
             }
     },
-  saveEdit() {
-      // Implement logic to save the edited barang to your data store or API
-      // Update the original barang with edited values
-    Object.assign(this.karyawan, this.editedKaryawan);
-    // After saving, disable edit mode
-    this.isEditing = false;
-  },
+
+
+//  async saveEdit() { //axios
+//       try {
+//         // Send a PUT request to update the edited karyawan
+//         await this.$axios.put(
+//           `/karyawan/update/${this.editedKaryawan.id}`,
+//           this.editedKaryawan
+//         ); // Replace with your API endpoint
+//         // Update the original karyawan with edited values
+//         Object.assign(this.karyawan, this.editedKaryawan);
+//         // After saving, disable edit mode
+//         this.isEditing = false;
+//       } catch (error) {
+//         console.error("Error saving edited karyawan:", error.response);
+//       }
+//   },
+
 
   cancelEdit() {
     // If the user cancels the edit, revert the editedKaryawan object to the original karyawan
@@ -141,7 +212,11 @@ default: false
   },
 
 computed:{
+  karyawans() {
+        return this.$store.state.karyawan.karyawans;
+        },
 
+        ...mapState('karyawan', ['karyawans']),
 },
 
 }

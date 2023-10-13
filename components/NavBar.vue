@@ -1,5 +1,5 @@
 <template>
-    <nav class="navbar is-light">
+    <nav class="navbar is-dark">
     <div class="container">
     <div class="navbar-brand">
     <nuxt-link class="navbar-item" to="/">My Accountant</nuxt-link>

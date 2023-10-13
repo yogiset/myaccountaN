@@ -1,5 +1,5 @@
 <template>
-  <section class="section">
+  <section class="section min-vh-100" >
     <div class="container">
       <h2 class="title">My Profile</h2>
       <div class="profile-card">
@@ -61,6 +61,12 @@ computed: {
   font-size: 18px;
   margin: 10px 0;
   color: #fff; /* White text color */
+}
+.section{
+    background:  url('static/3.webp') no-repeat;
+    background-size: cover;
+    background-position: center;
+    
 }
 
 </style>

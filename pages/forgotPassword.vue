@@ -1,5 +1,5 @@
 <template>
-<section class="section">
+<section class="section min-vh-100">
 <div class="container">
 <div class="columns">
 <div class="column is-4 is-offset-4">
@@ -80,3 +80,11 @@ email: this.email,
 
 
 </script>
+<style scoped>
+.section{
+    background:  url('static/5.webp') no-repeat;
+    background-size: cover;
+    background-position: center;
+    
+}
+</style>

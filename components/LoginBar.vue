@@ -1,5 +1,5 @@
 <template>
-    <nav class="navbar is-light">
+    <nav class="navbar is-dark">
     <div class="container">
     <div class="navbar-brand">
     <button class="button navbar-burger">

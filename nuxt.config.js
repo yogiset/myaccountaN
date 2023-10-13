@@ -64,16 +64,15 @@ export default {
   // Build Configuration: https://go.nuxtjs.dev/config-build
   build: {},
 
-  // auth: {
-  //   strategies: {
-  //   local: {
-  //   endpoints: {
-  //   login: { url: '/user/login', method: 'post', propertyName: 'data.token' },
-  //   user: { url: '/user/me', method: 'get', propertyName: 'data' },
-  //   logout: false
-  //         },
-  //   user: {autoFetch: true,},      
-  //       }
-  //     }
-  //   },
+  auth: {
+    strategies: {
+    local: {
+    endpoints: {
+    login: { url: '/user/login', method: 'post', propertyName: 'data.token' },
+    user: false,
+    logout: false,
+          },          
+        }
+      }
+    },
 };
