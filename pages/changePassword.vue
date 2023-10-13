@@ -46,7 +46,7 @@ import Notification from '~/components/Notification'
 import NotificationEmail from '~/components/NotificationEmail'
 import jwt from 'jsonwebtoken';
 export default {
-   
+middleware: 'auth',   
 components: {
 Notification,
 NotificationEmail,

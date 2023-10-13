@@ -39,11 +39,17 @@ computed: {
     },
 
 methods: {
-async logout() {
+// async logout() {
 
-        this.$router.push('/');
+//         this.$router.push('/');
         
-        },
+//         },
+
+async logout() {
+await this.$auth.logout();
+},
+
+
     },
 
 

@@ -4,9 +4,9 @@
       <h2 class="title">My Profile</h2>
       <div class="profile-card">
         <div class="profile-info">
-          <p><strong>Username:</strong> {{ username }}</p>
-          <p><strong>Email:</strong> {{ email }}</p>
-          <p><strong>Role:</strong> {{ role }}</p>
+          <p><strong>Username:</strong> {{  username }}</p>
+          <p><strong>Email:</strong> {{  email }}</p>
+          <p><strong>Role:</strong> {{  role }}</p>
         </div>
       </div>
     </div>
@@ -14,7 +14,9 @@
 </template>
 <script>
 import jwt_decode from 'jwt-decode';
+import { mapGetters } from 'vuex'
 export default {
+middleware: 'auth',  
   data() {
     return {
       username: '',
@@ -24,6 +26,7 @@ export default {
   },    
 
 computed: {
+    ...mapGetters(['loggedInUser']),
 
     },
   mounted() {

@@ -71,13 +71,53 @@ mounted() {
 
 methods: {
 
+async login() {
+
+  try {
+    const response = await this.$auth.loginWith('local', {
+      data: {
+        email: this.email,
+        password: this.password,
+      },
+    });
+
+    if (response) {
+      if (response.data && response.data.token && response.status === 200) {
+        // Extract the token from the response
+        const jwtToken = response.data.token;
+        // Store the token in localStorage
+        console.log(this.$auth.loggedIn);
+        localStorage.setItem('token', jwtToken);
+        this.$router.push('/profile');
+        }else if (response.status === 400){
+          this.error = response.data.message;
+        }else {
+        // Handle the case where the response doesn't contain the expected data
+        this.error = "Unexpected response from the server.";
+        }
+    } else {
+      // Handle the case where the response is undefined
+      this.error = "No response from the server.";
+    }
+  } catch (e) {
+    if (e.response && e.response.data && e.response.data.message) {
+      this.error = e.response.data.message;
+    } else {
+      // Handle any other unexpected errors
+      this.error = "An error occurred while processing your request.";
+    }
+  }
+  
+},
+
 // async login() {
+
 //   try {
-//     const response = await this.$auth.loginWith('local', {
-//       data: {
-//         email: this.email,
-//         password: this.password,
-//       },
+//     const response  = await this.$axios.post('/user/login', {
+//       email: this.email,
+//       password: this.password,
+      
+
 //     });
 
 //     if (response) {
@@ -105,45 +145,7 @@ methods: {
 //       this.error = "An error occurred while processing your request.";
 //     }
 //   }
-  
-// },
-
-async login() {
-
-  try {
-    const response  = await this.$axios.post('/user/login', {
-      email: this.email,
-      password: this.password,
-      
-
-    });
-
-    if (response) {
-      if (response.data && response.data.token && response.status === 200) {
-        // Extract the token from the response
-        const jwtToken = response.data.token;
-        // Store the token in localStorage
-        localStorage.setItem('token', jwtToken);
-        this.$router.push('/profile');
-        }else if (response.status === 400){
-          this.error = response.data.message;
-        }else {
-        // Handle the case where the response doesn't contain the expected data
-        this.error = "Unexpected response from the server.";
-        }
-    } else {
-      // Handle the case where the response is undefined
-      this.error = "No response from the server.";
-    }
-  } catch (e) {
-    if (e.response && e.response.data && e.response.data.message) {
-      this.error = e.response.data.message;
-    } else {
-      // Handle any other unexpected errors
-      this.error = "An error occurred while processing your request.";
-    }
-  }
-}
+// }
 
 
     }

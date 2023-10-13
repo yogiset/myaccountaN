@@ -129,6 +129,7 @@
 import CardBarang from "@/components/CardBarang.vue";
 import { mapState, mapMutations, mapActions } from "vuex"
 export default {
+middleware: 'auth',  
   components: {
     CardBarang,
   },

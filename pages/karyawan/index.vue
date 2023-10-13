@@ -96,7 +96,7 @@ import CardKaryawan from "@/components/CardKaryawan.vue"
 import { mapState, mapMutations, mapActions } from "vuex"
 
 export default {
-    
+middleware: 'auth',    
 components: {
 CardKaryawan
 },
