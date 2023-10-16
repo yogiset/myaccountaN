@@ -14,6 +14,7 @@ type="email"
 class="input"
 name="email"
 v-model="email"
+required
 />
 </div>
 </div>
@@ -25,6 +26,7 @@ type="password"
 class="input"
 name="password"
 v-model="password"
+required
 />
 </div>
 </div>
@@ -49,7 +51,7 @@ Forgot password? <nuxt-link to="/forgotPassword">Forgot_Password</nuxt-link>
 <script>
 import Notification from '~/components/Notification'
 export default {
-middleware: 'guest',    
+    
 components: {
 Notification,
 },
