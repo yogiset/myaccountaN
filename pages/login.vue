@@ -181,5 +181,6 @@ export default {
   background: url("static/4.webp") no-repeat;
   background-size: cover;
   background-position: center;
+  padding: 100px;
 }
 </style>
