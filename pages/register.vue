@@ -26,7 +26,7 @@
             <div class="field">
               <label class="label">Phone Number</label>
               <div class="control is-flex">
-                <div class="select" style="width: 50%;">
+                <div class="select w-50">
                   <select v-model="selectedCountryCode" required>
                     <option disabled value="">Country ID</option>
                     <option
@@ -45,7 +45,6 @@
                   v-model="contactNumber"
                   required
                   placeholder="Phone Number"
-                  style="width: 50%;"
                 />
               </div>
               <p class="help is-danger" v-if="contactNumberError">
