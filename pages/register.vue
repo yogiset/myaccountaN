@@ -7,7 +7,6 @@
           <form method="post" @submit.prevent="register">
             <Notification :message="error" v-if="error" />
             <NotificationEmail :message="messageEmail" v-if="messageEmail" />
-
             <div class="field">
               <label class="label">Username</label>
               <div class="control">
@@ -22,11 +21,14 @@
               </div>
               <p class="help is-danger" v-if="nameError">{{ nameError }}</p>
             </div>
-
             <div class="field">
               <label class="label">Phone Number</label>
               <div class="control is-flex">
+
                 <div class="select" style="width: 40%">
+
+                <div class="select w-50">
+
                   <select v-model="selectedCountryCode" required>
                     <option disabled value="">Country ID</option>
                     <option
