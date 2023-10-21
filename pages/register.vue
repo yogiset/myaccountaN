@@ -189,10 +189,8 @@ export default {
     },
 
         passwordError2() {
-      if (this.showErrors) {
-        if (!this.confirmPassword === !this.password) {
-          return "Password and Confirm password must be same !";
-        } 
+      if (this.showErrors && !this.confirmPassword === !this.password) {
+          return "Password and Confirm password must be same !";       
       }
       return "";
     },
