@@ -78,17 +78,30 @@
           {{ umurError }}
         </p>
       </div>
-      <input
-        v-model="editedKaryawan.phone"
-        required
-        type="text"
-        class="form-control"
-      />
+      <div class="form-control mb-2 d-flex align-items-center">
+        <select v-model="selectedCountryCode" required>
+          <option disabled value="">Country ID</option>
+          <option
+            v-for="country in countryCodes"
+            :key="country.code"
+            :value="country.code"
+          >
+            {{ country.name }} ({{ country.code }})
+          </option>
+        </select>
+        <input
+          v-model="editedKaryawan.phone"
+          class="form-control border-0"
+          required
+          type="text"
+        />
+      </div>
       <div>
         <p class="help is-danger" v-if="phoneError">
           {{ phoneError }}
         </p>
       </div>
+
       <input
         v-model="editedKaryawan.email"
         required
@@ -145,6 +158,21 @@ export default {
       showErrors: false,
       isEditing: false, // Track if the edit mode is active
       editedKaryawan: { ...this.karyawan },
+      selectedCountryCode: "",
+      countryCodes: [
+        { name: "US", code: "+1" },
+        { name: "UK", code: "+44" },
+        { name: "AU", code: "+61" },
+        { name: "GM", code: "+49" },
+        { name: "FR", code: "+33" },
+        { name: "JP", code: "+81" },
+        { name: "SG", code: "+65" },
+        { name: "MY", code: "+60" },
+        { name: "TH", code: "+66" },
+        { name: "ID", code: "+62" },
+        { name: "VN", code: "+84" },
+        { name: "PH", code: "+63" },
+      ],
       options: {
         inquiry: [
           { value: "OfficeBoy", text: "Office Boy" },
@@ -162,12 +190,11 @@ export default {
     };
   },
   methods: {
-
-
     editKaryawan() {
       this.error = null;
       // Set editedKaryawan to a copy of the current karyawan
       this.editedKaryawan = { ...this.karyawan };
+
       // Enable edit mode
       this.isEditing = true;
     },
@@ -270,6 +297,7 @@ export default {
         return;
       }
       //axios
+      this.editedKaryawan.phone = this.selectedCountryCode + this.editedKaryawan.phone.substring(this.selectedCountryCode.length);
       if (
         this.editedKaryawan.nama.length >= 3 &&
         this.editedKaryawan.email.length >= 14 &&
