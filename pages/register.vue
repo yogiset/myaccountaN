@@ -207,8 +207,8 @@ export default {
     },
 
     passwordError2() {
-      if (this.showErrors && !this.confirmPassword === !this.password) {
-        return "Password and Confirm password must be same !";
+      if (this.showErrors && this.confirmPassword !== this.password) {
+        return "Password and Confirm password must be the same!";
       }
       return "";
     },
@@ -263,6 +263,7 @@ export default {
           this.email = "";
           this.password = "";
           this.confirmPassword = "";
+          this.checkBox = false;
 
           this.showErrors = false;
         } catch (e) {
