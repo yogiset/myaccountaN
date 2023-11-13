@@ -101,7 +101,7 @@
                       {{ option.text }}
                     </option>
                   </select>
-                  
+
                   <input
                     v-model="form.phone"
                     class="form-control border-0 mb-2"
@@ -167,6 +167,7 @@
 import CardKaryawan from "@/components/CardKaryawan.vue";
 import { mapState, mapMutations, mapActions } from "vuex";
 import Notification from "~/components/Notification";
+import jwt from "jsonwebtoken";
 
 export default {
   middleware: "auth",
@@ -350,22 +351,35 @@ export default {
         age <= 100
       ) {
         try {
-          const response = await this.$axios.post("/karyawan/add", this.form); // Replace with your API endpoint
-          const newItem = response.data;
-          this.karyawans.push(newItem);
-          // Reset the form fields after adding a karyawan
-          this.form = {
-            id: "",
-            nama: "",
-            email: "",
-            jabatan: "",
-            umur: "",
-            phone: "",
-            tgl_lahir: "",
-            imageurl: "",
-          };
-          this.isCreating = false;
-          this.showErrors = false;
+          const jwtToken2 = localStorage.getItem("token");
+          const decodedToken2 = jwt.decode(jwtToken2);
+
+          if (decodedToken2) {
+            const userRole = decodedToken2.role;
+            console.log(userRole);
+
+            const response = await this.$axios.post("/karyawan/add", this.form,{role:userRole}); // Replace with your API endpoint
+            const newItem = response.data;
+            this.karyawans.push(newItem);
+            // Reset the form fields after adding a karyawan
+            this.form = {
+              id: "",
+              nama: "",
+              email: "",
+              jabatan: "",
+              umur: "",
+              phone: "",
+              tgl_lahir: "",
+              imageurl: "",
+            };
+            this.isCreating = false;
+            this.showErrors = false;
+          } else {
+            this.error = "Invalid or missing authentication token.";
+            setTimeout(() => {
+              this.error = null;
+            }, 5000);
+          }
         } catch (error) {
           console.error("Error creating new karyawan:", error);
         }

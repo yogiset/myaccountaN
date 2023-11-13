@@ -41,6 +41,7 @@
 <script>
 import Notification from "~/components/Notification";
 import NotificationEmail from "~/components/NotificationEmail";
+import jwt from "jsonwebtoken";
 export default {
   components: {
     Notification,
@@ -66,28 +67,52 @@ export default {
       this.showErrors = true;
       if (this.email.length >= 14) {
         try {
-          const response = await this.$axios.post("/user/forgotPassword", {
-            email: this.email,
-          });
-          if (response.status === 200) {
-            this.messageEmail = response.data.message;
-            this.error = null;
+          const jwtToken = localStorage.getItem("token");
+          console.log("token", jwtToken);
 
-            setTimeout(() => {
+          // Decode the JWT token to extract the email using jsonwebtoken
+          const decodedToken = jwt.decode(jwtToken);
+          console.log("decodedToken", decodedToken);
+          if (decodedToken) {
+            const userRole = decodedToken.role;
+            console.log("userRole", userRole);
+
+            const response = await this.$axios.post(
+              "/user/forgotPassword",
+              {
+                email: this.email,
+                role: userRole,
+              },
+              // {
+              //   headers: {
+              //     Authorization: `Bearer ${jwtToken}`,
+              //   },
+              // }
+            );
+            if (response.status === 200) {
+              this.messageEmail = response.data.message;
+              this.error = null;
+
+              setTimeout(() => {
+                this.messageEmail = null;
+              }, 5000);
+
+              setTimeout(() => {
+                this.$router.push("/login");
+              }, 10000);
+            } else if (response.status === 500) {
+              this.error = response.data.message;
               this.messageEmail = null;
-            }, 5000);
-
-            setTimeout(() => {
-              this.$router.push("/login");
-            }, 10000);
-          } else if (response.status === 500) {
-            this.error = response.data.message;
-            this.messageEmail = null;
+              setTimeout(() => {
+                this.error = null;
+              }, 5000);
+            }
+          } else {
+            this.error = "Invalid or missing authentication token.";
             setTimeout(() => {
               this.error = null;
             }, 5000);
           }
-
           this.email = "";
           this.showErrors = false;
         } catch (e) {

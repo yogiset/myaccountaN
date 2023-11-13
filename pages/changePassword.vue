@@ -123,6 +123,8 @@ export default {
 
           if (decodedToken) {
             const userEmail = decodedToken.sub; //'sub' contains the email
+            const userRole = decodedToken.role;
+            console.log("userRole",userRole);
             console.log("userEmail", userEmail);
 
             const response = await this.$axios.post(
@@ -131,12 +133,13 @@ export default {
                 oldPassword: this.oldPassword,
                 newPassword: this.newPassword,
                 email: userEmail, // Send the email to the API
+                role: userRole,
               },
-              {
-                headers: {
-                  Authorization: `Bearer ${jwtToken}`,
-                },
-              }
+              // {
+              //   headers: {
+              //     Authorization: `Bearer ${jwtToken}`,
+              //   },
+              // }
             );
 
             if (this.oldPassword === this.newPassword) {

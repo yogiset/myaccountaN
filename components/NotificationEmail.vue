@@ -7,11 +7,5 @@
 export default {
 name: 'NotificationEmail',
 props: ['message'],
-
-methods: {
-
 }
-
-}
-
 </script>

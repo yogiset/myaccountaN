@@ -160,6 +160,7 @@
 <script>
 import CardBarang from "@/components/CardBarang.vue";
 import { mapState, mapMutations, mapActions } from "vuex";
+import jwt from "jsonwebtoken";
 export default {
   middleware: "auth",
   components: {
@@ -311,21 +312,45 @@ export default {
         age <= 20
       ) {
         try {
-          const response = await this.$axios.post("/barang/add", this.form); // Replace with your API endpoint
-          const newItem = response.data;
-          this.barangs.push(newItem);
-          // Reset the form fields after adding a barang
-          this.form = {
-            id: "",
-            namabarang: "",
-            jenisbarang: "",
-            jumlahbarang: "",
-            hargabarang: "",
-            tglmasuk: "",
-            imageurl: "",
-          };
-          this.isCreating = false;
-          this.showErrors = false;
+          const jwtToken2 = localStorage.getItem("token");
+          const decodedToken2 = jwt.decode(jwtToken2);
+
+          if (decodedToken2) {
+            const userRole = decodedToken2.role;
+            console.log(userRole);
+
+            const formData = {
+              ...this.form,
+              role: userRole,
+            };
+            const response = await this.$axios.post("/barang/add", formData,              
+            {
+                headers: {
+                  Authorization: `Bearer ${jwtToken2}`,
+                },
+              });
+            const newItem = response.data;
+            this.barangs.push(newItem);
+            // Reset the form fields after adding a barang
+            this.form = {
+              id: "",
+              namabarang: "",
+              jenisbarang: "",
+              jumlahbarang: "",
+              hargabarang: "",
+              tglmasuk: "",
+              imageurl: "",
+            };
+            this.isCreating = false;
+            this.showErrors = false;
+            this.showErrors = false;
+          } else {
+            this.error = "Invalid or missing authentication token.";
+            setTimeout(() => {
+              this.error = null;
+            }, 5000);
+          }
+          
         } catch (error) {
           console.error("Error creating new barang:", error);
         }

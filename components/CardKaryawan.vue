@@ -124,6 +124,7 @@
 import Swal from "sweetalert2";
 import { mapState, mapMutations, mapActions } from "vuex";
 import Notification from "~/components/Notification";
+import jwt from "jsonwebtoken";
 export default {
   components: {
     Notification,
@@ -187,10 +188,27 @@ export default {
 
       if (result.isConfirmed) {
         try {
-          await this.$axios.delete(`/karyawan/delete/${this.karyawan.id}`); // Replace with your API endpoint
-          this.$emit("delete-karyawan", this.karyawan);
-          Swal.fire("Deleted!", "Your data has been deleted.", "success");
-          window.location.reload();
+          const jwtToken = localStorage.getItem("token");
+          console.log("token", jwtToken);
+
+          // Decode the JWT token to extract the email using jsonwebtoken
+          const decodedToken = jwt.decode(jwtToken);
+          console.log("decodedToken", decodedToken);
+
+          if (decodedToken) {
+            const userRole = decodedToken.role;
+            console.log("userRole", userRole);
+
+            await this.$axios.delete(`/karyawan/delete/${this.karyawan.id}`,{role:userRole}); // Replace with your API endpoint
+            this.$emit("delete-karyawan", this.karyawan);
+            Swal.fire("Deleted!", "Your data has been deleted.", "success");
+            window.location.reload();
+          } else {
+            this.error = "Invalid or missing authentication token.";
+            setTimeout(() => {
+              this.error = null;
+            }, 5000);
+          }
         } catch (error) {
           console.error("Error deleting karyawan:", error.response);
           Swal.fire(
@@ -281,14 +299,30 @@ export default {
         age <= 100
       ) {
         try {
-          // Send a PUT request to update the edited karyawan
-          await this.$axios.put(
-            `/karyawan/update/${this.editedKaryawan.id}`,
-            this.editedKaryawan
-          ); // Replace with your API endpoint
-          // Update the original karyawan with edited values
-          Object.assign(this.karyawan, this.editedKaryawan);
-          // After saving, disable edit mode
+          const jwtToken = localStorage.getItem("token");
+          console.log("token", jwtToken);
+
+          // Decode the JWT token to extract the email using jsonwebtoken
+          const decodedToken = jwt.decode(jwtToken);
+          console.log("decodedToken", decodedToken);
+
+          if (decodedToken) {
+            const userRole = decodedToken.role;
+            console.log("userRole", userRole);
+
+            // Send a PUT request to update the edited karyawan
+            await this.$axios.put(
+              `/karyawan/update/${this.editedKaryawan.id}`,this.editedKaryawan,{role:userRole},); // Replace with your API endpoint
+            // Update the original karyawan with edited values
+            Object.assign(this.karyawan, this.editedKaryawan);
+            // After saving, disable edit mode
+          } else {
+            this.error = "Invalid or missing authentication token.";
+            setTimeout(() => {
+              this.error = null;
+            }, 5000);
+          }
+
           this.isEditing = false;
           this.showErrors = false;
         } catch (error) {

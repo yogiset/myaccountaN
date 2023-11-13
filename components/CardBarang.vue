@@ -112,6 +112,7 @@
 <script>
 import Swal from "sweetalert2";
 import { mapState, mapMutations, mapActions } from "vuex";
+import jwt from "jsonwebtoken";
 export default {
   props: {
     barang: {
@@ -167,7 +168,7 @@ export default {
         const age = currentDate.getFullYear() - birthDate.getFullYear();
 
         // Check if age is outside the desired range (20 to 100)
-        if (age > 20 ) {
+        if (age > 20) {
           return "Tanggal Masuk must be less than 20 years old";
         }
       }
@@ -208,10 +209,27 @@ export default {
 
       if (result.isConfirmed) {
         try {
-          await this.$axios.delete(`/barang/delete/${id}`); // Replace with your API endpoint
-          this.$emit("delete-barang", this.barang);
-          Swal.fire("Deleted!", "The item has been deleted.", "success");
-          window.location.reload();
+          const jwtToken = localStorage.getItem("token");
+          console.log("token", jwtToken);
+
+          // Decode the JWT token to extract the email using jsonwebtoken
+          const decodedToken = jwt.decode(jwtToken);
+          console.log("decodedToken", decodedToken);
+
+          if (decodedToken) {
+            const userRole = decodedToken.role;
+            console.log("userRole", userRole);
+
+            await this.$axios.delete(`/barang/delete/${id}`,{role:userRole}); // Replace with your API endpoint
+            this.$emit("delete-barang", this.barang);
+            Swal.fire("Deleted!", "The item has been deleted.", "success");
+            window.location.reload();
+          } else {
+            this.error = "Invalid or missing authentication token.";
+            setTimeout(() => {
+              this.error = null;
+            }, 5000);
+          }
         } catch (error) {
           console.error("Error deleting barang:", error.response);
           Swal.fire(
@@ -243,11 +261,11 @@ export default {
     async saveEdit() {
       this.showErrors = true;
 
-        const birthDate = new Date(this.editedBarang.tglmasuk);
-        const currentDate = new Date();
-        const age = currentDate.getFullYear() - birthDate.getFullYear();
-        // Check if age is outside the desired range 20
-      if (age > 20 ) {
+      const birthDate = new Date(this.editedBarang.tglmasuk);
+      const currentDate = new Date();
+      const age = currentDate.getFullYear() - birthDate.getFullYear();
+      // Check if age is outside the desired range 20
+      if (age > 20) {
         return;
       }
 
@@ -260,14 +278,28 @@ export default {
         age <= 20
       ) {
         try {
-          // Send a PUT request to update the edited barang
-          await this.$axios.put(
-            `/barang/update/${this.editedBarang.id}`,
-            this.editedBarang
-          ); // Replace with your API endpoint
-          // Update the original barang with edited values
-          Object.assign(this.barang, this.editedBarang);
-          // After saving, disable edit mode
+          const jwtToken = localStorage.getItem("token");
+          console.log("token", jwtToken);
+
+          // Decode the JWT token to extract the email using jsonwebtoken
+          const decodedToken = jwt.decode(jwtToken);
+          console.log("decodedToken", decodedToken);
+
+          if (decodedToken) {
+            const userRole = decodedToken.role;
+            console.log("userRole", userRole);
+            // Send a PUT request to update the edited barang
+            await this.$axios.put(
+              `/barang/update/${this.editedBarang.id}`,this.editedBarang,{ role: userRole }); // Replace with your API endpoint
+            // Update the original barang with edited values
+            Object.assign(this.barang, this.editedBarang);
+            // After saving, disable edit mode
+          } else {
+            this.error = "Invalid or missing authentication token.";
+            setTimeout(() => {
+              this.error = null;
+            }, 5000);
+          }
           this.isEditing = false;
           this.showErrors = false;
         } catch (error) {
